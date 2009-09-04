@@ -6,7 +6,7 @@ require 'artester'
 
 $LOAD_PATH.unshift('lib')
 
-require 'lib/game_logger'
+require 'lib/ologger'
 
 Spec::Runner.configure do |config|
   config.mock_with :rr

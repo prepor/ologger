@@ -1,20 +1,20 @@
 require 'test/test_helper'
 
-describe GameLogger do
+describe OLogger do
   describe "Object with game logger" do
     before(:each) do
-      GameLogger.buffer.flush
-      Object.send :include, GameLogger
+      OLogger.buffer.flush
+      Object.send :include, OLogger
       @obj = Object.new
       
     end
     it "should add message to buffer" do
-      mock(GameLogger.buffer).add(hash_including(:message => 'hi!'))
+      mock(OLogger.buffer).add(hash_including(:message => 'hi!'))
       @obj.game_logger 'hi!'
     end
     
     it "should add objects to buffer" do
-      mock(GameLogger.buffer).add(hash_including(:message => 'hi!', :objs => [{ :foo => :bar}, { :bar => :foo}]))
+      mock(OLogger.buffer).add(hash_including(:message => 'hi!', :objs => [{ :foo => :bar}, { :bar => :foo}]))
       @obj.game_logger 'hi!', { :foo => :bar}, { :bar => :foo}
     end
   end
@@ -24,29 +24,29 @@ describe GameLogger do
       # require 'ruby-debug'
       # debugger
       Artester[:game_logger].reload
-      GameLogger.buffer.flush
-      Object.send :include, GameLogger
+      OLogger.buffer.flush
+      Object.send :include, OLogger
       @obj = Object.new
       @ar_obj = Foo.create :name => 'tester', :bar => 'hi!'
     end
     
     it "should insert link to ar object" do
-      # mock(GameLogger.buffer).add(hash_including(:message => 'Self:', :objs => [{"name"=>"tester", "id"=>1, "bar"=>"hi!"}]))
-      mock(GameLogger.buffer).add(hash_including(:message => 'hi!', :objs => ["g#foos.#{@ar_obj.id}#"]))
-      stub(GameLogger.buffer).add
+      # mock(OLogger.buffer).add(hash_including(:message => 'Self:', :objs => [{"name"=>"tester", "id"=>1, "bar"=>"hi!"}]))
+      mock(OLogger.buffer).add(hash_including(:message => 'hi!', :objs => ["g#foos.#{@ar_obj.id}#"]))
+      stub(OLogger.buffer).add
       @obj.game_logger 'hi!', @ar_obj
     end
     
     it "should insert itsel description to ar object log" do
-      mock(GameLogger.buffer).add(hash_including(:message => 'Self:', :objs => [{"name"=>"tester", "id"=>1, "bar"=>"hi!"}]))      
-      stub(GameLogger.buffer).add
+      mock(OLogger.buffer).add(hash_including(:message => 'Self:', :objs => [{"name"=>"tester", "id"=>1, "bar"=>"hi!"}]))      
+      stub(OLogger.buffer).add
       
       @obj.game_logger 'hi!', @ar_obj
     end
     
     it "should raise exceptions" do
-      mock(GameLogger.buffer).add(hash_including(:message => "Exception:"))
-      GameLogger.enable do
+      mock(OLogger.buffer).add(hash_including(:message => "Exception:"))
+      OLogger.enable do
         Foo.find(10)
       end
     end
@@ -54,21 +54,35 @@ describe GameLogger do
     describe "writing" do
       
       before(:all) do
-        GameLogger.path = Pathname.new('test/game_logs')
-        GameLogger.path.rmtree if GameLogger.path.exist?
+        OLogger.path = Pathname.new('test/ologs')
+        OLogger.path.rmtree if OLogger.path.exist?
       end
       
       after(:each) do
-        GameLogger.path.rmtree
+        OLogger.path.rmtree if OLogger.path.exist?
       end
       
       it "should write logs to file" do
-        path = GameLogger.path + 'foos' + "#{@ar_obj.id}.log"
+        path = OLogger.path + 'foos' + "#{@ar_obj.id}.log"
         path.exist?.should be_false
-        GameLogger.enable do
+        OLogger.enable do
           @ar_obj.game_logger 'hi!'
         end
         path.exist?.should be_true
+      end
+      
+      describe "garbage collecting" do
+        before(:each) do          
+          stub(OLogger).needed_to_remove { true }
+          OLogger.enable do
+            @ar_obj.game_logger 'hi!'
+          end
+        end
+        it "should remove all big and old logs" do
+          (OLogger.path + 'foos' + "#{@ar_obj.id}.log").exist?.should be_true
+          OLogger.gc
+          (OLogger.path + 'foos' + "#{@ar_obj.id}.log").exist?.should be_false
+        end
       end
     end
     

@@ -1,7 +1,7 @@
 begin
   require 'jeweler'
   Jeweler::Tasks.new do |gemspec|
-    gemspec.name = "olog"
+    gemspec.name = "ologger"
     gemspec.summary = "Object separated logs"
     gemspec.description = ""
     gemspec.email = "ceo@prepor.ru"

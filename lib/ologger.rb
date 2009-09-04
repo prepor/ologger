@@ -2,44 +2,63 @@ require 'pp'
 require 'pathname'
 require 'active_support'
 require 'active_record'
-module GameLogger
+module OLogger
   LOG_URL = '/game_logs/'
   
   
-  require 'game_logger/parser'
-  require 'game_logger/buffer'
-  require 'game_logger/object_methods'
-  require 'game_logger/middleware'
+  require 'ologger/parser'
+  require 'ologger/buffer'
+  require 'ologger/object_methods'
+  require 'ologger/middleware'
   
   class << self
     attr_accessor :path
     def path
-      @path ||= defined?(RAILS_ROOT) ? Pathname.new(File.join(RAILS_ROOT, 'log/game_logs')) : nil
+      @path ||= defined?(RAILS_ROOT) ? Pathname.new(File.join(RAILS_ROOT, 'log/o_logs')) : nil
     end
     def gc
       gc_dir
     end
     
-    def gc_dir(dir_path = GameLogger::LOG_PATH)
+    def gc_dir(dir_path = OLogger.path)
       if dir_path.directory?
-        directory.each_entry do |path|
-          gc_dir(path)
+        dir_path.each_entry do |path|
+          if not_self_and_parent path
+            gc_dir(dir_path + path)
+          end
         end
       else
-        if path.mtime < 1.day.ago || path.size > 300.kilobytes
-          path.delete
+        if needed_to_remove(dir_path)
+          dir_path.delete
         end
       end
     end
     
+    def not_self_and_parent(path)
+      path.to_s != '.' && path.to_s != '..'
+    end
+    
+    def needed_to_remove?(path)
+      path.mtime < 1.day.ago || path.size > 300.kilobytes
+    end
+    
     def get_log(log_id)
       name = parse_log_id(log_id)
-      path = GameLogger.path + name[:module] + name[:file]
+      path = OLogger.path + name[:module] + name[:file]
       if File.exist?(path)
-        GameLogger::Parser.parse(File.read(path))
+        OLogger::Parser.parse(File.read(path))
       else
         nil
       end
+    end
+    
+    def list_of_modules
+      OLogger.path.entries.select {|v| not_self_and_parent v }
+    end
+    
+    def get_logs(log_module)
+      path = OLogger.path + log_module
+      path.entries.select {|v| not_self_and_parent v }
     end
     
     def parse_log_id(log_id)
@@ -48,7 +67,7 @@ module GameLogger
     end
     
     def create_module(log_module)
-      path = GameLogger.path + log_module
+      path = OLogger.path + log_module
       unless path.exist?
         path.mkpath
       end      

@@ -1,4 +1,4 @@
-module GameLogger
+module OLogger
   class Middleware
     def initialize(app)
       @app = app
@@ -9,9 +9,9 @@ module GameLogger
     end
 
     def _call(env)
-      GameLogger.buffer.flush
+      OLogger.buffer.flush
       @status, @headers, @response = @app.call(env)
-      GameLogger.buffer.write
+      OLogger.buffer.write
       [@status, @headers, self]
     end
   
