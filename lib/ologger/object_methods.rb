@@ -1,10 +1,10 @@
 module OLogger
   module ObjectMethods
-    def game_logger_module
+    def ologger_module
       self.class.name.tableize
     end
 
-    def game_logger_id
+    def ologger_id
       if defined?(ActiveRecord::Base) && self.is_a?(ActiveRecord::Base)
         self.id
       else
@@ -12,17 +12,17 @@ module OLogger
       end 
     end
     # g#group_fight.123#
-    def game_logger(message, *objs)
-      parsed_objs = objs.map { |o| game_logger_object_format(o) }
-      OLogger.buffer.add :message => message, :objs => parsed_objs, :logger_module => game_logger_module, :logger_id => game_logger_id
+    def ologger(message, *objs)
+      parsed_objs = objs.map { |o| ologger_object_format(o) }
+      OLogger.buffer.add :message => message, :objs => parsed_objs, :logger_module => ologger_module, :logger_id => ologger_id
     end   
-    def game_logger_object_format(obj)
+    def ologger_object_format(obj)
       if defined?(ActiveRecord::Base) && obj.is_a?(ActiveRecord::Base)
         if obj == self
           obj.attributes
-        elsif obj.game_logger_id
-          OLogger.buffer.add :message => 'Self:', :objs => [obj.attributes], :logger_module => obj.game_logger_module, :logger_id => obj.game_logger_id        
-          "g##{obj.game_logger_module}.#{obj.game_logger_id}#"
+        elsif obj.ologger_id
+          OLogger.buffer.add :message => 'Self:', :objs => [obj.attributes], :logger_module => obj.ologger_module, :logger_id => obj.ologger_id        
+          "g##{obj.ologger_module}.#{obj.ologger_id}#"
         else
           obj
         end

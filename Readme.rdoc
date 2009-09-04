@@ -1,0 +1,26 @@
+= Usage
+
+  # Initializer
+  require 'ologger'
+  Object.send :include OLogger
+  
+  # Controller  
+  around_filter OLogger
+  
+  # Daemon  
+  OLogger.enable do
+    loop do
+      bla bla
+    end
+  end
+  
+  # Configs  
+  OLogger.path = Pathname('log/ologs')
+  
+  # In objects
+  def start!(character)
+    ologger "Starting project", character
+  end
+	
+
+

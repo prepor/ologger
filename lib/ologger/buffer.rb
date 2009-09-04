@@ -30,8 +30,6 @@ module OLogger
           end
         end        
       end 
-    rescue StandardError => e
-      puts "OLogger Error #{e.inspect}: #{e.backtrace}"
     end
   
   end

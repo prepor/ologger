@@ -15,7 +15,16 @@ Gem::Specification.new do |s|
   s.files = [
     "Rakefile",
      "VERSION",
+     "lib/ologger.rb",
+     "lib/ologger/buffer.rb",
+     "lib/ologger/middleware.rb",
+     "lib/ologger/object_methods.rb",
+     "lib/ologger/parser.rb",
+     "memory",
      "olog.gemspec",
+     "ologger.gemspec",
+     "pkg/olog-0.1.0.gem",
+     "pkg/ologger-0.1.0.gem",
      "test/test.rb",
      "test/test_helper.rb"
   ]

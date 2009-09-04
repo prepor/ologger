@@ -2,9 +2,11 @@ require 'pp'
 require 'pathname'
 require 'active_support'
 require 'active_record'
+
+
+require 'ologger/raise_patch'
 module OLogger
-  LOG_URL = '/game_logs/'
-  
+  LOG_URL = '/game_logs/'  
   
   require 'ologger/parser'
   require 'ologger/buffer'
@@ -53,12 +55,12 @@ module OLogger
     end
     
     def list_of_modules
-      OLogger.path.entries.select {|v| not_self_and_parent v }
+      OLogger.path.entries.select { |v| not_self_and_parent v }
     end
     
     def get_logs(log_module)
       path = OLogger.path + log_module
-      path.entries.select {|v| not_self_and_parent v }
+      path.entries.select { |v| not_self_and_parent v }.map{ |v| v.to_s.gsub /\.log$/, '' }
     end
     
     def parse_log_id(log_id)
@@ -83,11 +85,13 @@ module OLogger
     
     def enable(&block)      
       buffer.flush
+      Thread.current[:ologger_raiser] = true
       begin
-        yield      
+        yield           
       rescue StandardError => e
-        buffer.add :message => "Exception:", :objs => [e, e.backtrace]
+        e.obj.ologger "Exception:", :objs => [e, e.backtrace]
       ensure
+        Thread.current[:ologger_raiser] = false
         buffer.write
       end      
     end
@@ -98,7 +102,6 @@ module OLogger
   end
   
   def self.included(receiver)
-
     receiver.send :include, ObjectMethods
     receiver.extend ObjectMethods
   end
