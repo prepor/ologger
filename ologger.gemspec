@@ -5,28 +5,31 @@
 
 Gem::Specification.new do |s|
   s.name = %q{ologger}
-  s.version = "0.1.0"
+  s.version = "0.1.1"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Andrew Rudenko"]
-  s.date = %q{2009-09-04}
+  s.date = %q{2009-09-14}
+  s.default_executable = %q{ologger}
   s.description = %q{}
   s.email = %q{ceo@prepor.ru}
+  s.executables = ["ologger"]
   s.files = [
-    "Rakefile",
+    ".gitignore",
+     "Rakefile",
      "Readme.rdoc",
      "VERSION",
+     "bin/ologger",
      "lib/ologger.rb",
      "lib/ologger/buffer.rb",
      "lib/ologger/middleware.rb",
      "lib/ologger/object_methods.rb",
      "lib/ologger/parser.rb",
      "lib/ologger/raise_patch.rb",
+     "lib/ologger/tags",
      "memory",
      "olog.gemspec",
      "ologger.gemspec",
-     "pkg/olog-0.1.0.gem",
-     "pkg/ologger-0.1.0.gem",
      "test/test.rb",
      "test/test_helper.rb"
   ]
@@ -45,8 +48,14 @@ Gem::Specification.new do |s|
     s.specification_version = 3
 
     if Gem::Version.new(Gem::RubyGemsVersion) >= Gem::Version.new('1.2.0') then
+      s.add_runtime_dependency(%q<prepor-artester>, [">= 0"])
+      s.add_runtime_dependency(%q<activesupport>, [">= 0"])
     else
+      s.add_dependency(%q<prepor-artester>, [">= 0"])
+      s.add_dependency(%q<activesupport>, [">= 0"])
     end
   else
+    s.add_dependency(%q<prepor-artester>, [">= 0"])
+    s.add_dependency(%q<activesupport>, [">= 0"])
   end
 end
