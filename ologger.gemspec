@@ -28,7 +28,6 @@ Gem::Specification.new do |s|
      "lib/ologger/raise_patch.rb",
      "lib/ologger/tags",
      "memory",
-     "olog.gemspec",
      "ologger.gemspec",
      "test/test.rb",
      "test/test_helper.rb"
