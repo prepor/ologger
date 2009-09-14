@@ -1,0 +1,2 @@
+add	buffer.rb	/^    def add(options = {})$/
+open	buffer.rb	/^        (OLogger.path + logger_module + (logger_id/

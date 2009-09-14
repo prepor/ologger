@@ -1,0 +1,6 @@
+#!/usr/bin/env ruby
+require File.dirname(__FILE__) + "/../lib/ologger"
+
+ARGV.each do |path|
+  OLogger.gc_dir(Pathname.new(path))
+end

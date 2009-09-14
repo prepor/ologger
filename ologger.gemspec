@@ -14,12 +14,14 @@ Gem::Specification.new do |s|
   s.email = %q{ceo@prepor.ru}
   s.files = [
     "Rakefile",
+     "Readme.rdoc",
      "VERSION",
      "lib/ologger.rb",
      "lib/ologger/buffer.rb",
      "lib/ologger/middleware.rb",
      "lib/ologger/object_methods.rb",
      "lib/ologger/parser.rb",
+     "lib/ologger/raise_patch.rb",
      "memory",
      "olog.gemspec",
      "ologger.gemspec",

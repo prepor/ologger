@@ -48,7 +48,7 @@ describe OLogger do
         Foo.find(10)
       end
     end
-    
+
     describe "writing" do
       
       before(:all) do
@@ -59,7 +59,15 @@ describe OLogger do
       after(:each) do
         OLogger.path.rmtree if OLogger.path.exist?
       end
-      
+
+      it 'should call raise callback' do
+        raiser = lambda { |e| 0 }
+        mock(raiser).call(is_a(StandardError))
+        OLogger.on_raise = raiser
+        OLogger.enable do
+          Foo.find(10)
+        end
+      end 
       it "should write logs to file" do
         path = OLogger.path + 'foos' + "#{@ar_obj.id}.log"
         path.exist?.should be_false
@@ -76,7 +84,7 @@ describe OLogger do
           end
         end
         it "should remove all big and old logs" do
-          stub(OLogger).needed_to_remove { true }
+          stub(OLogger).needed_to_remove? { true }
           (OLogger.path + 'foos' + "#{@ar_obj.id}.log").exist?.should be_true
           OLogger.gc
           (OLogger.path + 'foos' + "#{@ar_obj.id}.log").exist?.should be_false

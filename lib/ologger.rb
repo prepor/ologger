@@ -1,7 +1,8 @@
+require 'rubygems'
 require 'pp'
 require 'pathname'
-require 'active_support'
-require 'active_record'
+require 'activesupport'
+
 
 
 require 'ologger/raise_patch'
@@ -14,7 +15,7 @@ module OLogger
   require 'ologger/middleware'
   
   class << self
-    attr_accessor :path
+    attr_accessor :path, :on_raise
     def path
       @path ||= defined?(RAILS_ROOT) ? Pathname.new(File.join(RAILS_ROOT, 'log/o_logs')) : nil
     end
@@ -30,7 +31,7 @@ module OLogger
           end
         end
       else
-        if needed_to_remove(dir_path)
+        if needed_to_remove?(dir_path)
           dir_path.delete
         end
       end
@@ -90,6 +91,7 @@ module OLogger
         yield           
       rescue StandardError => e
         e.obj.ologger "Exception:", :objs => [e, e.backtrace]
+        on_raise.call(e) if on_raise && on_raise.is_a?(Proc)
       ensure
         Thread.current[:ologger_raiser] = false
         buffer.write
