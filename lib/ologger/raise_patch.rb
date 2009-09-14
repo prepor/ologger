@@ -4,9 +4,10 @@ end
 module Kernel
   def ologger_raise(*argv)
     if Thread.current[:ologger_raiser]
-      ex = StandardError.new(*argv)
-      ex.obj = self
-      ologger_old_raise ex
+      argv.each do |e|
+        e.obj = self if e.is_a?(StandardError)
+      end
+      ologger_old_raise(*argv)
     else
       ologger_old_raise(*argv)
     end
@@ -16,3 +17,4 @@ module Kernel
   alias_method :raise, :ologger_raise
 
 end
+
