@@ -42,11 +42,20 @@ describe OLogger do
       @obj.ologger 'hi!', @ar_obj
     end
     
-    it "should raise exceptions" do
-      mock(OLogger.buffer).add(hash_including(:message => "Exception:"))
+    #it "should raise exceptions" do
+      #mock(OLogger.buffer).add(hash_including(:message => "Exception:"))
+      #OLogger.enable do
+        #Foo.find(10)
+      #end
+    #end
+
+    it "should raise exceptions on right level" do
+      OLogger.on_raise = lambda { |e| 0 }
+      mock(OLogger.buffer).add(hash_including(:message => "Exception:", :logger_module => 'test', :logger_id => 'test'))
       OLogger.enable do
-        Foo.find(10)
+        A.new.foo
       end
+
     end
 
     describe "writing" do

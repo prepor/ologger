@@ -61,7 +61,7 @@ module OLogger
     
     def get_logs(log_module)
       path = OLogger.path + log_module
-      path.entries.select { |v| not_self_and_parent v }.map{ |v| v.to_s.gsub /\.log$/, '' }
+      path.entries.select { |v| not_self_and_parent v }.map{ |v| v.to_s.gsub(/\.log$/, '') }
     end
     
     def parse_log_id(log_id)
@@ -86,17 +86,29 @@ module OLogger
     
     def enable(&block)      
       buffer.flush
-      Thread.current[:ologger_raiser] = true
       begin
         yield           
       rescue StandardError => e
-        e.obj.ologger "Exception:", :objs => [e, e.backtrace]
-        on_raise.call(e) if on_raise && on_raise.is_a?(Proc)
+        Thread.current[:ologger_raiser].ologger "Exception:", :objs => [e, e.backtrace] if Thread.current[:ologger_raiser]
+        if on_raise && on_raise.is_a?(Proc)
+          on_raise.call(e) 
+        else
+          raise e
+        end
       ensure
-        Thread.current[:ologger_raiser] = false
+        Thread.current[:ologger_raiser] = nil
         buffer.write
-      end      
+      end
     end
+
+    #def exception_message(e)
+      #params = { :objs => [e, e.backtrace] }
+      #if Thread.current[:ologger_raiser]
+        #params[:ologger_module] = Thread.current[:ologger_raiser].ologger_module
+        #params[:ologger_id] = Thread.current[:ologger_raiser].ologger_id
+      #end
+      #params
+    #end
     
     def filter(controller, &block)
       enable(&block)

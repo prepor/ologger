@@ -1,20 +1,18 @@
-class StandardError
-  attr_accessor :obj
-end
-module Kernel
-  def ologger_raise(*argv)
-    if Thread.current[:ologger_raiser]
-      argv.each do |e|
-        e.obj = self if e.is_a?(StandardError)
+module OLogger
+  module Raiser
+    def self.included(base)
+      base.instance_methods.each do |m| 
+        unless m =~ /^__|instance_eval|=|`/ 
+          base.class_eval %Q{def with_ologger_#{m}(*args, &block)
+            Thread.current[:ologger_raiser] = self
+            without_ologger_#{m}(*args, &block)
+          end
+          }
+          base.send :alias_method, :"without_ologger_#{m}", m
+          base.send :alias_method, m, :"with_ologger_#{m}"
+        end
       end
-      ologger_old_raise(*argv)
-    else
-      ologger_old_raise(*argv)
     end
   end
-
-  alias_method :ologger_old_raise, :raise
-  alias_method :raise, :ologger_raise
-
 end
 

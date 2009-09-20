@@ -22,3 +22,23 @@ Artester.def :game_logger do
     end
   end
 end
+
+class A
+  def foo
+    B.new.bar
+  end
+
+  def ologger_module
+    'test'
+  end
+  def ologger_id
+    'test'
+  end
+  include OLogger::Raiser
+end
+
+class B
+  def bar
+    raise 'hehe'
+  end
+end
