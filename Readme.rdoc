@@ -16,11 +16,23 @@
   
   # Configs  
   OLogger.path = Pathname('log/ologs')
+  OLogger.on_raise = lambda { |e| send_to_email(e) }
+
+  
   
   # In objects
   def start!(character)
     ologger "Starting project", character
   end
+
+  # For raise exceptions to object log
+  class A
+    # definitions
+
+    # AFTER definition
+    include OLogger::Raiser
+  end
+
 	
 
 
