@@ -5,11 +5,11 @@
 
 Gem::Specification.new do |s|
   s.name = %q{ologger}
-  s.version = "0.1.3"
+  s.version = "0.1.5"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Andrew Rudenko"]
-  s.date = %q{2009-09-14}
+  s.date = %q{2009-09-20}
   s.default_executable = %q{ologger}
   s.description = %q{}
   s.email = %q{ceo@prepor.ru}
@@ -27,7 +27,6 @@ Gem::Specification.new do |s|
      "lib/ologger/parser.rb",
      "lib/ologger/raise_patch.rb",
      "lib/ologger/tags",
-     "memory",
      "ologger.gemspec",
      "test/test.rb",
      "test/test_helper.rb"
