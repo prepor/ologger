@@ -89,7 +89,7 @@ module OLogger
       begin
         yield           
       rescue StandardError => e
-        Thread.current[:ologger_raiser].ologger "Exception:", :objs => [e, e.backtrace] if Thread.current[:ologger_raiser]
+        Thread.current[:ologger_raiser].ologger "Exception:", e, e.backtrace if Thread.current[:ologger_raiser]
         if on_raise && on_raise.is_a?(Proc)
           on_raise.call(e) 
         else
